@@ -11,13 +11,23 @@
     <text>{{info["title"]}}</text>
   </docTitle>
   <navMap>
-    {% for item in info["items"] %}
+    {% set ns = namespace(depth=0) %}
+    {% for item in info["items"] -%}
+    {% if item['depth'] <= ns.depth -%}
+    {% for i in range(-1,ns.depth-item['depth']) %}
+    </navPoint>
+    {% endfor %}
+    {% set ns.depth=item['depth'] %}
+    {% else %}{% set ns.depth=1+ns.depth %}
+    {%- endif %}
     <navPoint id="{{item["id"]}}" playOrder="{{loop.index0+1}}">
-      <navLabel>
+      <navLabel> 
         <text>{{item["label"]}}</text>
       </navLabel>
       <content src="{{item["href"].split('#')[0]}}"/>
+    {%- endfor %}
+    {% for i in range(-1,ns.depth) %}
     </navPoint>
     {% endfor %}
-  </navMap>
+   </navMap>
 </ncx>
