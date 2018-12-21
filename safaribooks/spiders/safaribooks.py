@@ -46,12 +46,13 @@ def decode(s):
     except:
         return s
 
+
 class SafariBooksSpider(scrapy.spiders.Spider):
     toc_url = 'https://www.safaribooksonline.com/nest/epub/toc/?book_id='
     name = 'SafariBooks'
     # allowed_domains = []
     start_urls = ['https://www.safaribooksonline.com/']
-    host = 'https://www.safaribooksonline.com/'
+    host = 'https://www.safaribooksonline.com'
 
     def __init__(
         self,
@@ -90,19 +91,18 @@ class SafariBooksSpider(scrapy.spiders.Spider):
         if self.cookie is not None:
             cookies = dict(x.strip().split('=') for x in self.cookie.split(';'))
 
-            return scrapy.Request(url=self.host + 'home', 
-                callback=self.after_login,
-                cookies=cookies,
-                headers={
-                    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36'
-                })
+            return scrapy.Request(url=self.host + '/home',
+                                  callback=self.after_login,
+                                  cookies=cookies,
+                                  headers={
+                                      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36'
+                                  })
 
         return scrapy.FormRequest.from_response(
-              response,
-              formdata={'email': self.user, 'password1': self.password},
-              callback=self.after_login
+            response,
+            formdata={'email': self.user, 'password1': self.password},
+            callback=self.after_login
         )
-
 
     def after_login(self, response):
         # Loose rule to decide if user signed in successfully.
@@ -142,7 +142,7 @@ class SafariBooksSpider(scrapy.spiders.Spider):
         for style_sheet in style_sheets:
             style_sheets_paths.append(style_sheet['full_path'])
             yield scrapy.Request(
-                style_sheet['url'], # I don't know when style_sheets will have multiple elements
+                style_sheet['url'],  # I don't know when style_sheets will have multiple elements
                 callback=partial(self.load_page_style, style_sheet['full_path'])
             )
 
@@ -163,7 +163,6 @@ class SafariBooksSpider(scrapy.spiders.Spider):
         # and share them in the downloaded files. But you need to carefully calculates the relative path.
         # For now just append to self.style
         self.style += response.body
-
 
     def parse_page(self, title, bookid, path, images, style, response):
         template = Template(PAGE_TEMPLATE)
