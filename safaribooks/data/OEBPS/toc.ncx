@@ -26,7 +26,7 @@
       </navLabel>
       <content src="{{item["href"].split('#')[0]}}"/>
     {%- endfor %}
-    {% for i in range(-1,ns.depth) %}
+    {% for i in range(-1,ns.depth-1) %}
     </navPoint>
     {% endfor %}
    </navMap>
